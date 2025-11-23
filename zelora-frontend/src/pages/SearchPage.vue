@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import ProductCard from '../components/ProductCard.vue'
+import { searchProducts } from '../services/api.js'
 
-// Form fields (not connected to backend yet)
+// Form fields
 const nameSearch = ref("")
 const categorySearch = ref("")
 const priceMin = ref("")
@@ -9,30 +11,32 @@ const priceMax = ref("")
 const keywordSearch = ref("")
 const recentOnly = ref(false)
 
-// Placeholder for results later
+// Results
 const results = ref([])
 
-/
-    function searchProductsHandler() {
-      const filters = {
-        name: nameSearch.value,
-        category: categorySearch.value,
-        priceMin: priceMin.value,
-        priceMax: priceMax.value,
-        keywords: keywordSearch.value,
-        recent: recentOnly.value
-      }
+// Called when user presses the button
+function searchProductsHandler() {
+  const filters = {
+    name: nameSearch.value,
+    category: categorySearch.value,
+    priceMin: priceMin.value,
+    priceMax: priceMax.value,
+    keywords: keywordSearch.value,
+    recent: recentOnly.value
+  }
 
-      // log filters + show placeholder result
-      searchProducts(filters)
+  console.log("Search filters:", filters)
 
-      results.value = [
-        {
-          id: 1,
-          msg: "Search request prepared. Backend connection soon."
-        }
-      ]
+  // temporary fake result
+  results.value = [
+    {
+      id: 1,
+      name: "Sample Product",
+      price: 29.99,
+      thumbnail: "/src/assets/no-image.png"
     }
+  ]
+}
 </script>
 
 <template>
@@ -40,9 +44,7 @@ const results = ref([])
     <h1>Search Products</h1>
 
     <div class="filters">
-
       <input v-model="nameSearch" type="text" placeholder="Search by product name..." />
-
       <input v-model="categorySearch" type="text" placeholder="Category name..." />
 
       <div class="price-row">
@@ -60,14 +62,19 @@ const results = ref([])
       <button @click="searchProductsHandler">Search Products</button>
     </div>
 
-    <!-- TEMP Search results -->
+    <!-- Results -->
     <div class="results">
       <h2>Results</h2>
-      <div v-for="p in results" :key="p.id" class="result-item">
-        {{ p.msg }}
-      </div>
-    </div>
 
+      <ProductCard
+          v-for="p in results"
+          :key="p.id"
+          :id="p.id"
+          :name="p.name"
+          :price="p.price"
+          :thumbnail="p.thumbnail"
+      />
+    </div>
   </div>
 </template>
 

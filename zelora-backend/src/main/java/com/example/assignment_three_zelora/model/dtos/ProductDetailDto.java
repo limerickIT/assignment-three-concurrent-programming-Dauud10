@@ -4,37 +4,26 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * DTO sent to the frontend for the product drill-down page.
- * Combines product info, category, rating, reviews and stock status.
+ * DTO for the Product Detail Page (Assignment Spec Part 2)
  */
 public class ProductDetailDto {
 
     private Integer productId;
-    private String name;
+    private String productName;
     private String description;
-
-    // original prices from DB
     private BigDecimal price;
     private BigDecimal discountedPrice;
-
-    // effective price the UI should actually display
     private BigDecimal displayPrice;
-
     private String categoryName;
     private Double averageRating;
-
-    // for now we’ll just use featureImage – you can extend to a list later
     private String featureImage;
-
     private List<ReviewDto> reviews;
-
-    // stock info calculated from inventory
-    private String stockStatus;    // IN_STOCK / LOW_STOCK / OUT_OF_STOCK
-    private String stockMessage;   // "In stock (X available)" / "Low stock..." etc.
-    private int availableQuantity;
+    private String stockStatus;
+    private String stockMessage;
+    private Integer availableQuantity;
 
     public ProductDetailDto(Integer productId,
-                            String name,
+                            String productName,
                             String description,
                             BigDecimal price,
                             BigDecimal discountedPrice,
@@ -45,9 +34,9 @@ public class ProductDetailDto {
                             List<ReviewDto> reviews,
                             String stockStatus,
                             String stockMessage,
-                            int availableQuantity) {
+                            Integer availableQuantity) {
         this.productId = productId;
-        this.name = name;
+        this.productName = productName;
         this.description = description;
         this.price = price;
         this.discountedPrice = discountedPrice;
@@ -68,8 +57,8 @@ public class ProductDetailDto {
         return productId;
     }
 
-    public String getName() {
-        return name;
+    public String getProductName() {
+        return productName;
     }
 
     public String getDescription() {
@@ -112,7 +101,7 @@ public class ProductDetailDto {
         return stockMessage;
     }
 
-    public int getAvailableQuantity() {
+    public Integer getAvailableQuantity() {
         return availableQuantity;
     }
 
@@ -120,8 +109,8 @@ public class ProductDetailDto {
         this.productId = productId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public void setDescription(String description) {
@@ -164,7 +153,7 @@ public class ProductDetailDto {
         this.stockMessage = stockMessage;
     }
 
-    public void setAvailableQuantity(int availableQuantity) {
+    public void setAvailableQuantity(Integer availableQuantity) {
         this.availableQuantity = availableQuantity;
     }
 }

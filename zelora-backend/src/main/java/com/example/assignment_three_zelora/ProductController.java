@@ -1,12 +1,12 @@
-package com.example.assignment_three_zelora.web;
+package com.example.assignment_three_zelora;
 
 import com.example.assignment_three_zelora.model.dtos.ProductSummaryDto;
+import com.example.assignment_three_zelora.model.dtos.ProductDetailDto;
 import com.example.assignment_three_zelora.model.entitys.Product;
-import com.example.assignment_three_zelora.model.repos.ProductRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.assignment_three_zelora.model.service.ProductService;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,20 +15,19 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * REST controller for product-related endpoints.
- * First endpoint: /api/products/search
- */
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
-    public ProductController(ProductRepository productRepository) {
-        this.productRepository = productRepository;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
     }
 
+    // -------------------------
+    // SEARCH ENDPOINT
+    // -------------------------
     @GetMapping("/search")
     public List<ProductSummaryDto> searchProducts(
             @RequestParam(required = false) String name,
@@ -39,24 +38,21 @@ public class ProductController {
             @RequestParam(required = false, defaultValue = "false") boolean recentOnly
     ) {
 
-        // calculate date for "last 7 days" if recentOnly = true
         Date recentDate = null;
         if (recentOnly) {
             LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
             recentDate = Date.from(sevenDaysAgo.atStartOfDay(ZoneId.systemDefault()).toInstant());
         }
 
-        // call repository search method
-        List<Product> results = productRepository.searchProducts(
+        List<Product> results = productService.searchProducts(
                 emptyToNull(name),
                 emptyToNull(category),
                 minPrice,
                 maxPrice,
-                recentDate,
+                recentOnly,
                 emptyToNull(keywords)
         );
 
-        // map entities to DTOs for the frontend
         return results.stream()
                 .map(p -> new ProductSummaryDto(
                         p.getProductId(),
@@ -70,13 +66,24 @@ public class ProductController {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Helper: treat empty strings as null so filters are ignored.
-     */
     private String emptyToNull(String value) {
         if (value == null || value.trim().isEmpty()) {
             return null;
         }
         return value.trim();
+    }
+
+    // -------------------------
+    // PRODUCT DETAIL ENDPOINT
+    // -------------------------
+    @GetMapping("/{id}/detail")
+    public ResponseEntity<ProductDetailDto> getProductDetail(@PathVariable Integer id) {
+        ProductDetailDto detail = productService.getProductDetail(id);
+
+        if (detail == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(detail);
     }
 }

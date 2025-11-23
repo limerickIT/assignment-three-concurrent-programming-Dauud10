@@ -1,11 +1,14 @@
 <template>
-  <router-view />
+  <div>
+    <!-- Page content appears here -->
+    <router-view />
+  </div>
 </template>
 
-<script>
-export default {};
+<script setup>
+/* Nothing needed yet */
 </script>
 
 <style>
-/* for now UI styling comes later */
+/* global styles */
 </style>

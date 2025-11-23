@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="Replaced App.vue with router-view layout." />
+    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="Replaced App.vue with router-view layout.">
+      <change beforePath="$PROJECT_DIR$/zelora-frontend/src/pages/SearchPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/zelora-frontend/src/pages/SearchPage.vue" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -76,7 +78,7 @@
       <updated>1763435973531</updated>
       <workItem from="1763435977873" duration="591000" />
       <workItem from="1763436722431" duration="8000" />
-      <workItem from="1763860294504" duration="3131000" />
+      <workItem from="1763860294504" duration="3442000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />

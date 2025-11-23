@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="Replaced App.vue with router-view layout.">
-      <change beforePath="$PROJECT_DIR$/zelora-frontend/src/pages/SearchPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/zelora-frontend/src/pages/SearchPage.vue" afterDir="false" />
-    </list>
+    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="Added axios + basic API service" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -78,7 +76,7 @@
       <updated>1763435973531</updated>
       <workItem from="1763435977873" duration="591000" />
       <workItem from="1763436722431" duration="8000" />
-      <workItem from="1763860294504" duration="3442000" />
+      <workItem from="1763860294504" duration="3770000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />
@@ -160,7 +158,23 @@
       <option name="project" value="LOCAL" />
       <updated>1763864041474</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Set up the search page UI. No backend yet.">
+      <option name="closed" value="true" />
+      <created>1763864389185</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1763864389185</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Added axios + basic API service">
+      <option name="closed" value="true" />
+      <created>1763864684756</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1763864684756</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -177,6 +191,8 @@
     <MESSAGE value="Added basic SearchPage with a search box." />
     <MESSAGE value="Created ProductPage and wired it to route params." />
     <MESSAGE value="Replaced App.vue with router-view layout." />
-    <option name="LAST_COMMIT_MESSAGE" value="Replaced App.vue with router-view layout." />
+    <MESSAGE value="Set up the search page UI. No backend yet." />
+    <MESSAGE value="Added axios + basic API service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added axios + basic API service" />
   </component>
 </project>

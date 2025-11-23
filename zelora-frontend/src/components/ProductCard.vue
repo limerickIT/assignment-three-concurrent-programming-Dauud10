@@ -1,10 +1,6 @@
 <script setup>
 import { defineProps } from "vue"
 
-/*
-  ProductCard shows a single product in search results.
-  Props come from SearchPage.vue
-*/
 const props = defineProps({
   id: Number,
   name: String,
@@ -15,7 +11,7 @@ const props = defineProps({
 
 <template>
   <div class="card">
-    <img :src="thumbnail" class="thumb" alt="product image" />
+    <img :src="thumbnail" class="thumb" alt="product image"/>
 
     <h3>{{ name }}</h3>
     <p>€{{ price }}</p>
@@ -33,12 +29,16 @@ const props = defineProps({
   border-radius: 8px;
   background: #222;
   color: #fff;
+  text-align: center;
 }
+
 .thumb {
   width: 100%;
   max-height: 150px;
   object-fit: cover;
+  border-radius: 8px;
 }
+
 .btn {
   display: inline-block;
   margin-top: 10px;

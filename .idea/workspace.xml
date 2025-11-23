@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="ProductCard component updated" />
+    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="ProductCard component updated">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zelora-backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/zelora-backend/pom.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -38,12 +42,15 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/assignment-three-concurrent-programming-Dauud10/zelora-frontend/src/assets",
+    "last_opened_file_path": "C:/assignment-three-concurrent-programming-Dauud10/zelora-backend/pom.xml",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
     "ts.external.directory.path": "C:\\Program Files\\JetBrains\\IntelliJ IDEA 2024.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
     "vue.rearranger.settings.migration": "true"
   },
@@ -76,7 +83,7 @@
       <updated>1763435973531</updated>
       <workItem from="1763435977873" duration="591000" />
       <workItem from="1763436722431" duration="8000" />
-      <workItem from="1763860294504" duration="6140000" />
+      <workItem from="1763860294504" duration="8416000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />
@@ -222,7 +229,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763867501838</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="ProductCard component updated">
+      <option name="closed" value="true" />
+      <created>1763867613113</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1763867613113</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

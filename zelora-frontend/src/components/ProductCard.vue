@@ -1,9 +1,11 @@
 <script setup>
+import { defineProps } from "vue"
+
 /*
   ProductCard shows a single product in search results.
   Props come from SearchPage.vue
 */
-defineProps({
+const props = defineProps({
   id: Number,
   name: String,
   price: Number,

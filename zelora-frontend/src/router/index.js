@@ -1,14 +1,20 @@
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHistory } from 'vue-router'
 
-// I will import the ProductSearch page later
-import ProductSearch from "../pages/ProductSearch.vue";
+// Import pages
+import HomePage from '../pages/HomePage.vue'
+import SearchPage from '../pages/SearchPage.vue'
+import ProductPage from '../pages/ProductPage.vue'
 
+/* Basic router setup.*/
 const routes = [
-    { path: "/", component: ProductSearch },
-    { path: "/search", component: ProductSearch },
-];
+    { path: '/', name: 'home', component: HomePage },
+    { path: '/search', name: 'search', component: SearchPage },
+    { path: '/product/:id', name: 'product', component: ProductPage }
+]
 
-export default createRouter({
+const router = createRouter({
     history: createWebHistory(),
-    routes,
-});
+    routes
+})
+
+export default router

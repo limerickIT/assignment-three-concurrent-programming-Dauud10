@@ -1,5 +1,5 @@
 <script setup>
-/* Very simple temporary homepage. */
+/* Very simple temporary homepage */
 </script>
 
 <template>

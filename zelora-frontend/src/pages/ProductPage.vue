@@ -1,13 +1,19 @@
 <script setup>
-import { useRoute } from 'vue-router'
+import axios from "axios";
+import { ref, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { addRecentlyViewed } from "../services/recentlyViewed.js";
+
+const route = useRoute();
+const product = ref(null);
 
 onMounted(async () => {
   const id = route.params.id;
+
   const res = await axios.get(`/api/products/${id}/detail`);
   product.value = res.data;
 
-  // Add to recently viewed storage
+  // Save to recently viewed
   addRecentlyViewed({
     id: res.data.id,
     name: res.data.name,
@@ -15,15 +21,24 @@ onMounted(async () => {
     price: res.data.displayPrice,
   });
 });
-
-const route = useRoute()
-const productId = route.params.id
 </script>
 
 <template>
   <div>
-    <h1>Product #{{ productId }}</h1>
+    <h1>Product #{{ route.params.id }}</h1>
 
-    <p>Full product details will go here.</p>
+    <p v-if="!product">Loading...</p>
+
+    <div v-else>
+      <h2>{{ product.name }}</h2>
+
+      <img :src="product.featureImage" width="200" />
+
+      <p><strong>Price:</strong> €{{ product.displayPrice }}</p>
+
+      <p>{{ product.description }}</p>
+
+      <!-- Recently viewed section will be added later -->
+    </div>
   </div>
 </template>

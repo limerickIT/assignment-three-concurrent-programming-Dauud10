@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="forgot to install vue router" />
+    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="Added ProductCard component and hooked it to SearchPage.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,8 +18,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Vue Composition API Component" />
         <option value="JavaScript File" />
+        <option value="Vue Composition API Component" />
       </list>
     </option>
   </component>
@@ -76,7 +78,7 @@
       <updated>1763435973531</updated>
       <workItem from="1763435977873" duration="591000" />
       <workItem from="1763436722431" duration="8000" />
-      <workItem from="1763860294504" duration="5464000" />
+      <workItem from="1763860294504" duration="5781000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />
@@ -198,7 +200,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763865854417</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Added ProductCard component and hooked it to SearchPage.">
+      <option name="closed" value="true" />
+      <created>1763867225614</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1763867225614</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -219,6 +229,7 @@
     <MESSAGE value="Added axios + basic API service" />
     <MESSAGE value="Search page now sends filters" />
     <MESSAGE value="forgot to install vue router" />
-    <option name="LAST_COMMIT_MESSAGE" value="forgot to install vue router" />
+    <MESSAGE value="Added ProductCard component and hooked it to SearchPage." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added ProductCard component and hooked it to SearchPage." />
   </component>
 </project>

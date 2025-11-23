@@ -13,13 +13,26 @@ const recentOnly = ref(false)
 const results = ref([])
 
 /
-function searchProducts() {
-  // TEMP just showing user input
-  results.value = [{
-    id: 1,
-    msg: "Search system wired. Backend connection coming next."
-  }]
-}
+    function searchProductsHandler() {
+      const filters = {
+        name: nameSearch.value,
+        category: categorySearch.value,
+        priceMin: priceMin.value,
+        priceMax: priceMax.value,
+        keywords: keywordSearch.value,
+        recent: recentOnly.value
+      }
+
+      // log filters + show placeholder result
+      searchProducts(filters)
+
+      results.value = [
+        {
+          id: 1,
+          msg: "Search request prepared. Backend connection soon."
+        }
+      ]
+    }
 </script>
 
 <template>
@@ -44,7 +57,7 @@ function searchProducts() {
         Recently added (last 7 days)
       </label>
 
-      <button @click="searchProducts">Search Products</button>
+      <button @click="searchProductsHandler">Search Products</button>
     </div>
 
     <!-- TEMP Search results -->

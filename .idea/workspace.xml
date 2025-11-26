@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="ProductCard component updated" />
+    <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="ProductCard component updated">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -82,7 +84,7 @@
       <workItem from="1763436722431" duration="8000" />
       <workItem from="1763860294504" duration="8416000" />
       <workItem from="1763880113266" duration="57000" />
-      <workItem from="1764195918791" duration="769000" />
+      <workItem from="1764195918791" duration="1505000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />

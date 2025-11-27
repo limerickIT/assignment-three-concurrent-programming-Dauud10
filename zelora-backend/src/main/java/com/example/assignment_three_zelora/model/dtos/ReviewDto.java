@@ -1,5 +1,6 @@
 package com.example.assignment_three_zelora.model.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 
 /**
@@ -7,10 +8,19 @@ import java.util.Date;
  */
 public class ReviewDto {
 
+    @JsonProperty("rating")
     private Integer rating;
+
+    @JsonProperty("comment")
     private String comment;
+
+    @JsonProperty("customer_first_name")
     private String customerFirstName;
+
+    @JsonProperty("customer_city")
     private String customerCity;
+
+    @JsonProperty("review_date")
     private Date reviewDate;
 
     public ReviewDto(Integer rating, String comment,
@@ -23,46 +33,17 @@ public class ReviewDto {
         this.reviewDate = reviewDate;
     }
 
-    public ReviewDto() {
-    }
+    public ReviewDto() {}
 
-    public Integer getRating() {
-        return rating;
-    }
+    public Integer getRating() { return rating; }
+    public String getComment() { return comment; }
+    public String getCustomerFirstName() { return customerFirstName; }
+    public String getCustomerCity() { return customerCity; }
+    public Date getReviewDate() { return reviewDate; }
 
-    public String getComment() {
-        return comment;
-    }
-
-    public String getCustomerFirstName() {
-        return customerFirstName;
-    }
-
-    public String getCustomerCity() {
-        return customerCity;
-    }
-
-    public Date getReviewDate() {
-        return reviewDate;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public void setCustomerFirstName(String customerFirstName) {
-        this.customerFirstName = customerFirstName;
-    }
-
-    public void setCustomerCity(String customerCity) {
-        this.customerCity = customerCity;
-    }
-
-    public void setReviewDate(Date reviewDate) {
-        this.reviewDate = reviewDate;
-    }
+    public void setRating(Integer rating) { this.rating = rating; }
+    public void setComment(String comment) { this.comment = comment; }
+    public void setCustomerFirstName(String customerFirstName) { this.customerFirstName = customerFirstName; }
+    public void setCustomerCity(String customerCity) { this.customerCity = customerCity; }
+    public void setReviewDate(Date reviewDate) { this.reviewDate = reviewDate; }
 }

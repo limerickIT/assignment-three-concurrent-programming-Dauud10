@@ -53,26 +53,28 @@ async function searchProductsHandler() {
 
     results.value = res.data.map((p) => {
       const price =
-          p.discountedPrice && p.discountedPrice < p.price
-              ? p.discountedPrice
+          p.discounted_price && p.discounted_price < p.price
+              ? p.discounted_price
               : p.price;
 
-      const img = p.featureImage
-          ? new URL(`../assets/products/${p.featureImage}`, import.meta.url).href
+      const img = p.feature_image
+          ? new URL(`../assets/products/${p.feature_image}`, import.meta.url).href
           : new URL(
               "../assets/products/ZeloraAwaitingProductImage.png",
               import.meta.url
           ).href;
 
       return {
-        id: p.id,
-        name: p.name,
+        id: p.product_id,
+        name: p.product_name,
         price,
         thumbnail: img,
-        category: p.categoryName,
-        release: p.releaseDate,
+        category: p.category_name,
+        release: p.release_date,
       };
     });
+
+
   } catch (err) {
     console.error("Search failed:", err);
     results.value = [];

@@ -6,34 +6,44 @@ const props = defineProps({
   id: Number,
   name: String,
   price: Number,
-  thumbnail: String,
-  showHeart: { type: Boolean, default: true }
+  thumbnail: String
 });
 
 const CURRENT_CUSTOMER_ID = 1;
-
 const inWishlist = ref(false);
 
-// Load wishlist state
+// Load wishlist state on mount
 onMounted(async () => {
-  if (!props.showHeart) return;
+  try {
+    if (!props.id) {
+      console.error("ProductCard: ID is undefined");
+      return;
+    }
 
-  const res = await axios.get(
-      `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}/contains/${props.id}`
-  );
-  inWishlist.value = res.data === true;
+    const res = await axios.get(
+        `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}/contains/${props.id}`
+    );
+
+    inWishlist.value = res.data === true;
+  } catch (err) {
+    console.error("Failed to check wishlist state", err);
+  }
 });
 
-// Toggle wishlist
+// Add or remove from wishlist
 async function toggleWishlist() {
-  const base = `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}`;
+  try {
+    const base = `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}`;
 
-  if (inWishlist.value) {
-    await axios.delete(`${base}/remove/${props.id}`);
-    inWishlist.value = false;
-  } else {
-    await axios.post(`${base}/add/${props.id}`);
-    inWishlist.value = true;
+    if (inWishlist.value) {
+      await axios.delete(`${base}/remove/${props.id}`);
+      inWishlist.value = false;
+    } else {
+      await axios.post(`${base}/add/${props.id}`);
+      inWishlist.value = true;
+    }
+  } catch (err) {
+    console.error("Wishlist update failed", err);
   }
 }
 </script>
@@ -44,14 +54,9 @@ async function toggleWishlist() {
       <img :src="thumbnail" class="thumb" alt="product image" />
     </div>
 
-    <!-- Heart Button -->
-    <button
-        v-if="showHeart"
-        class="heart"
-        @click.stop="toggleWishlist"
-        :class="{ active: inWishlist }"
-    >
-      ♥
+    <!-- BUTTON (Replaces Heart) -->
+    <button class="wishlist-btn" @click.stop="toggleWishlist">
+      {{ inWishlist ? "Remove from wishlist" : "Add to wishlist" }}
     </button>
 
     <h3 class="name">{{ name }}</h3>
@@ -90,29 +95,21 @@ async function toggleWishlist() {
   object-fit: cover;
 }
 
-/* Heart button */
-.heart {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255,255,255,0.15);
+/* Wishlist button */
+.wishlist-btn {
+  width: 100%;
+  padding: 9px 10px;
   border: none;
-  border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  border-radius: 10px;
+  background: #2c6dff;
   color: #fff;
-  font-size: 1.2rem;
+  font-weight: 600;
   cursor: pointer;
   transition: 0.2s ease;
 }
 
-.heart:hover {
-  background: rgba(255,255,255,0.25);
-}
-
-.heart.active {
-  background: #ff2d55;
-  color: white;
+.wishlist-btn:hover {
+  background: #2254c5;
 }
 
 .name {

@@ -1,5 +1,6 @@
 package com.example.assignment_three_zelora.model.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -9,12 +10,25 @@ import java.util.Date;
  */
 public class ProductSummaryDto {
 
+    @JsonProperty("product_id")
     private Integer productId;
+
+    @JsonProperty("product_name")
     private String productName;
+
+    @JsonProperty("price")
     private BigDecimal price;
+
+    @JsonProperty("discounted_price")
     private BigDecimal discountedPrice;
+
+    @JsonProperty("feature_image")
     private String featureImage;
+
+    @JsonProperty("category_name")
     private String categoryName;
+
+    @JsonProperty("release_date")
     private Date releaseDate;
 
     public ProductSummaryDto(Integer productId,

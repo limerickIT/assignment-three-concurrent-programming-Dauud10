@@ -24,6 +24,9 @@ const route = useRoute();
           <RouterLink to="/recent" :class="{ active: route.name === 'recent' }">
             Recently Viewed
           </RouterLink>
+          <RouterLink to="/wishlist" :class="{ active: route.name === 'wishlist' }">
+            Wishlist
+          </RouterLink>
         </div>
       </nav>
     </header>

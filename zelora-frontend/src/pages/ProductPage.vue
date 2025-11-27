@@ -1,9 +1,12 @@
 <script setup>
 import axios from "axios";
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
-import { addRecentlyViewed, getRecentlyViewed } from "../services/recentlyViewed.js";
+import {ref, onMounted} from "vue";
+import {useRoute} from "vue-router";
 import ProductCard from "../components/ProductCard.vue";
+import {addRecentlyViewed, getRecentlyViewed} from "../services/recentlyViewed.js";
+
+// Dummy customer ID
+const CUSTOMER_ID = 1;
 
 const route = useRoute();
 const product = ref(null);
@@ -11,97 +14,90 @@ const recently = ref([]);
 const recommended = ref([]);
 const isInWishlist = ref(false);
 
-const CURRENT_CUSTOMER_ID = 1; // dummy user for this assignment
+// Universal image loader
+function imageUrl(filename) {
+  return new URL(`/src/assets/products/${filename}`, import.meta.url).href;
+}
 
 onMounted(async () => {
-  const id = route.params.id;
+  const productId = route.params.id;
 
-  // 1. Fetch product details
-  const res = await axios.get(`http://localhost:8080/api/products/${id}/detail`);
+  // 1) Load product details
+  const res = await axios.get(`http://localhost:8080/api/products/${productId}/detail`);
   product.value = res.data;
 
-  // Build image path
+  // 2) Fix image path
   if (product.value.featureImage) {
-    product.value.imagePath = `/src/assets/products/${product.value.featureImage}`;
+    product.value.imagePath = imageUrl(product.value.featureImage);
   } else {
-    product.value.imagePath = "/src/assets/ZeloraAwaitingProductImage.png";
+    product.value.imagePath = new URL(`/src/assets/ZeloraAwaitingProductImage.png`, import.meta.url).href;
   }
 
-  // 2. Save to "recently viewed"
-  const currentId = product.value.id ?? product.value.productId;
-  const currentName = product.value.name ?? product.value.productName;
-
+  // 3) Save as recently viewed
   addRecentlyViewed({
-    id: currentId,
-    name: currentName,
-    image: product.value.imagePath,
-    price: product.value.displayPrice ?? product.value.price,
+    id: product.value.productId,
+    name: product.value.productName,
+    price: product.value.displayPrice,
+    image: product.value.imagePath
   });
-
   recently.value = getRecentlyViewed();
 
-  // 3. Recommended products
-  const recRes = await axios.get(
-      `http://localhost:8080/api/products/${id}/recommendations`
-  );
-  recommended.value = recRes.data.map(p => ({
+  // 4) Recommended products
+  const recRes = await axios.get(`http://localhost:8080/api/products/${productId}/recommendations`);
+  recommended.value = recRes.data.map((p) => ({
     id: p.id,
     name: p.name,
     price: p.discountedPrice && p.discountedPrice < p.price ? p.discountedPrice : p.price,
-    thumbnail: p.featureImage
-        ? `/src/assets/products/${p.featureImage}`
-        : "/src/assets/ZeloraAwaitingProductImage.png",
+    thumbnail: p.featureImage ? imageUrl(p.featureImage) : new URL(`/src/assets/no-image.png`, import.meta.url).href,
   }));
 
-  // 4. Wishlist status
-  const wishRes = await axios.get(
-      `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}/contains/${id}`
+  // 5) Wishlist status
+  const wishStatus = await axios.get(
+      `http://localhost:8080/api/wishlist/customer/${CUSTOMER_ID}/contains/${productId}`
   );
-  isInWishlist.value = wishRes.data === true;
+  isInWishlist.value = wishStatus.data === true;
 });
 
-// Toggle wishlist
+// Wishlist toggle
 async function toggleWishlist() {
-  if (!product.value) return;
-  const id = route.params.id;
-  const base = `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}`;
+  const pid = route.params.id;
+  const baseUrl = `http://localhost:8080/api/wishlist/customer/${CUSTOMER_ID}`;
 
   if (isInWishlist.value) {
-    await axios.delete(`${base}/remove/${id}`);
+    await axios.delete(`${baseUrl}/remove/${pid}`);
     isInWishlist.value = false;
   } else {
-    await axios.post(`${base}/add/${id}`);
+    await axios.post(`${baseUrl}/add/${pid}`);
     isInWishlist.value = true;
   }
 }
 </script>
 
-
 <template>
   <section v-if="product" class="page-shell detail-shell">
+
+    <!-- TOP SECTION -->
     <div class="top">
       <div class="image-col">
-        <img :src="product.imagePath" class="main-img" />
+        <img :src="product.imagePath" class="main-img"/>
       </div>
 
       <div class="info-col">
         <p class="category">{{ product.categoryName }}</p>
-        <h1>{{ product.name }}</h1>
+        <h1>{{ product.productName }}</h1>
 
+        <!-- PRICE -->
         <div class="price-row">
-          <span v-if="product.discountedPrice" class="old">
-            €{{ product.price }}
-          </span>
+          <span v-if="product.discountedPrice" class="old">€{{ product.price }}</span>
           <span class="new">€{{ product.displayPrice }}</span>
         </div>
 
-        <p
-            class="stock"
-            :class="product.stockStatus.toLowerCase()"
-        >
+        <!-- STOCK -->
+        <p class="stock" :class="product.stockStatus.toLowerCase()">
           {{ product.stockMessage }}
         </p>
 
+        <!-- RATING -->
         <p class="rating">
           <strong>Rating:</strong>
           <span v-if="product.averageRating > 0">
@@ -110,45 +106,62 @@ async function toggleWishlist() {
           <span v-else>No ratings yet</span>
         </p>
 
+        <!-- DESCRIPTION -->
         <p class="desc">{{ product.description }}</p>
+
+        <!-- WISHLIST BUTTON -->
+        <button class="wishlist-btn" @click="toggleWishlist">
+          <span v-if="isInWishlist">❤️ Remove from Wishlist</span>
+          <span v-else>🤍 Add to Wishlist</span>
+        </button>
       </div>
     </div>
 
-    <!-- Reviews -->
-    <section class="reviews" v-if="product.reviews && product.reviews.length">
+    <!-- REVIEWS SECTION -->
+    <section class="reviews" v-if="product.reviews?.length > 0">
       <h2>Customer Reviews</h2>
 
-      <div
-          v-for="r in product.reviews"
-          :key="r.reviewDate"
-          class="review-card"
-      >
+      <div class="review-card" v-for="r in product.reviews" :key="r.reviewDate">
         <p class="stars">⭐ {{ r.rating }}/5</p>
         <p class="comment">{{ r.comment }}</p>
         <p class="meta">— {{ r.customerFirstName }}, {{ r.customerCity }}</p>
-        <p class="date">
-          {{ new Date(r.reviewDate).toLocaleDateString() }}
-        </p>
+        <p class="date">{{ new Date(r.reviewDate).toLocaleDateString() }}</p>
       </div>
     </section>
 
-    <!-- Recently viewed strip -->
+    <!-- RECOMMENDED PRODUCTS -->
+    <section class="recommended" v-if="recommended.length > 0">
+      <h2>Recommended for You</h2>
+      <div class="card-row">
+        <ProductCard
+            v-for="rec in recommended"
+            :key="rec.id"
+            :id="rec.id"
+            :name="rec.name"
+            :price="rec.price"
+            :thumbnail="rec.thumbnail"
+        />
+      </div>
+    </section>
+
+    <!-- RECENTLY VIEWED -->
     <section class="recent-strip" v-if="recently.length > 1">
       <h2>Recently Viewed</h2>
       <div class="strip-row">
         <div
-            v-for="item in recently.slice(0, 6)"
-            :key="item.id"
-            v-if="item.id !== product.id"
             class="strip-card"
+            v-for="rv in recently.slice(0, 6)"
+            :key="rv.id"
+            v-if="rv.id !== product.productId"
         >
-          <img :src="item.image" />
-          <p class="name">{{ item.name }}</p>
-          <p class="price">€{{ item.price }}</p>
-          <router-link :to="`/product/${item.id}`">View</router-link>
+          <img :src="rv.image"/>
+          <p class="name">{{ rv.name }}</p>
+          <p class="price">€{{ rv.price }}</p>
+          <router-link :to="`/product/${rv.id}`">View</router-link>
         </div>
       </div>
     </section>
+
   </section>
 
   <p v-else class="loading">Loading...</p>
@@ -159,10 +172,11 @@ async function toggleWishlist() {
   color: #111;
 }
 
+/* TOP GRID */
 .top {
   display: grid;
-  grid-template-columns: minmax(0, 2.6fr) minmax(0, 3.4fr);
-  gap: 30px;
+  grid-template-columns: 46% 54%;
+  gap: 32px;
 }
 
 @media (max-width: 860px) {
@@ -171,40 +185,33 @@ async function toggleWishlist() {
   }
 }
 
+/* IMAGE */
 .image-col {
   background: #111;
-  border-radius: 18px;
+  border-radius: 16px;
+  padding: 20px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 18px;
 }
 
 .main-img {
   width: 100%;
   border-radius: 12px;
   object-fit: cover;
-  max-height: 420px;
 }
 
-.info-col h1 {
-  font-size: 1.9rem;
-  margin-bottom: 6px;
-}
-
+/* INFO */
 .category {
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  font-size: 0.8rem;
   color: #777;
 }
 
 .price-row {
-  margin: 14px 0 6px;
-  font-size: 1.4rem;
+  margin: 14px 0;
   display: flex;
   gap: 10px;
-  align-items: baseline;
+  font-size: 1.5rem;
 }
 
 .old {
@@ -213,17 +220,11 @@ async function toggleWishlist() {
 }
 
 .new {
-  color: #111;
   font-weight: 700;
 }
 
-.stock {
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
 .stock.in_stock {
-  color: #0b8a34;
+  color: #0f9d32;
 }
 
 .stock.low_stock {
@@ -231,51 +232,45 @@ async function toggleWishlist() {
 }
 
 .stock.out_of_stock {
-  color: #c32222;
-}
-
-.rating {
-  margin-bottom: 10px;
+  color: #c32020;
 }
 
 .desc {
-  color: #444;
+  margin-top: 10px;
+  color: #555;
 }
 
-/* Reviews */
-
-.reviews {
-  margin-top: 30px;
+/* WISHLIST BUTTON */
+.wishlist-btn {
+  margin-top: 20px;
+  padding: 10px 18px;
+  background: #111;
+  color: white;
+  border-radius: 999px;
+  border: 1px solid #444;
 }
 
-.reviews h2 {
-  margin-bottom: 12px;
+.wishlist-btn:hover {
+  background: #222;
 }
 
+/* REVIEWS */
 .review-card {
   background: #f3f3f3;
   border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
 }
 
-.stars {
-  color: #c89200;
-  font-weight: 600;
+/* RECOMMENDED */
+.recommended .card-row {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
 }
 
-.meta,
-.date {
-  font-size: 0.8rem;
-  color: #666;
-}
-
-/* Recently viewed strip */
-
-.recent-strip {
-  margin-top: 32px;
-}
-
+/* RECENT STRIP */
 .strip-row {
   display: flex;
   gap: 14px;
@@ -286,9 +281,9 @@ async function toggleWishlist() {
 .strip-card {
   min-width: 150px;
   background: #111;
-  color: #f5f5f5;
-  border-radius: 12px;
+  color: white;
   padding: 10px;
+  border-radius: 12px;
   text-align: center;
 }
 
@@ -296,44 +291,4 @@ async function toggleWishlist() {
   width: 100%;
   border-radius: 8px;
 }
-
-.strip-card .price {
-  font-weight: 600;
-}
-.loading {
-  margin: 40px auto;
-  text-align: center;
-}
-.wishlist-btn {
-  margin-top: 16px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  border: 1px solid #444;
-  background: #111;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.wishlist-btn:hover {
-  background: #222;
-  transform: translateY(-1px);
-}
-
-/* Recommended row */
-.recommended {
-  margin-top: 40px;
-}
-
-.recommended h2 {
-  margin-bottom: 12px;
-}
-
-.card-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 16px;
-}
-
 </style>

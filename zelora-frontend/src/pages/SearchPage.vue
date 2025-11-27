@@ -3,11 +3,11 @@ import { ref, onMounted, watch, nextTick } from "vue";
 import axios from "axios";
 import ProductCard from "../components/ProductCard.vue";
 
+// datatables
 import $ from "jquery";
 import "datatables.net-dt";
 import "datatables.net-dt/css/jquery.dataTables.css";
 
-// Search fields
 const nameSearch = ref("");
 const categorySearch = ref("");
 const priceMin = ref("");
@@ -15,23 +15,22 @@ const priceMax = ref("");
 const keywordSearch = ref("");
 const recentOnly = ref(false);
 
-// Data
 const results = ref([]);
 const loading = ref(false);
 const categories = ref([]);
 
-// DataTables
 const tableRef = ref(null);
 let dataTable = null;
 
-// Load categories on mount
+// helper to load images
+function imageUrl(filename) {
+  return new URL(`/src/assets/products/${filename}`, import.meta.url).href;
+}
+
+// load categories
 onMounted(async () => {
-  try {
-    const res = await axios.get("http://localhost:8080/api/categories");
-    categories.value = res.data;
-  } catch (err) {
-    console.error("Failed to load categories", err);
-  }
+  const res = await axios.get("http://localhost:8080/api/categories");
+  categories.value = res.data;
 });
 
 // Search handler
@@ -48,40 +47,40 @@ async function searchProductsHandler() {
   };
 
   try {
-    const res = await axios.get("http://localhost:8080/api/products/search", { params });
+    const res = await axios.get("http://localhost:8080/api/products/search", {
+      params,
+    });
 
     results.value = res.data.map((p) => ({
       id: p.id,
       name: p.name,
       price: p.displayPrice ?? p.price,
       thumbnail: p.featureImage
-          ? `/src/assets/${p.featureImage}`
-          : "/src/assets/no-image.png",
+          ? imageUrl(p.featureImage)
+          : new URL(`/src/assets/no-image.png`, import.meta.url).href,
       category: p.categoryName,
       release: p.releaseDate,
     }));
-  } catch (err) {
-    console.error("Search failed:", err);
+  } catch (e) {
+    console.error("Search failed:", e);
     results.value = [];
   }
 
   loading.value = false;
 }
 
-// Watch results → rebuild DataTables
-watch(results, async (val) => {
+// rebuild DataTables after results load
+watch(results, async () => {
   await nextTick();
 
   if (!tableRef.value) return;
 
-  // Destroy old instance
   if (dataTable) {
     dataTable.destroy();
     dataTable = null;
   }
 
-  // Rebuild new table
-  if (val.length > 0) {
+  if (results.value.length > 0) {
     dataTable = $(tableRef.value).DataTable({
       paging: true,
       searching: true,
@@ -94,40 +93,42 @@ watch(results, async (val) => {
 });
 </script>
 
-
 <template>
   <section class="search-shell">
-    <!-- Header -->
     <header class="search-header">
       <h1>Zelora Product Search</h1>
-      <p>Find products using detailed filters powered by our database.</p>
+      <p>Find products using powerful filtering and DataTables.</p>
     </header>
 
-    <!-- Filters -->
+    <!-- FILTERS -->
     <div class="filters">
-      <input v-model="nameSearch" type="text" placeholder="Search by product name..." />
+      <input v-model="nameSearch" type="text" placeholder="Search by product name..."/>
 
       <select v-model="categorySearch">
         <option value="">All Categories</option>
-        <option v-for="c in categories" :key="c.categoryId" :value="c.categoryName">
+        <option
+            v-for="c in categories"
+            :key="c.categoryId"
+            :value="c.categoryName"
+        >
           {{ c.categoryName }}
         </option>
       </select>
 
       <div class="price-row">
-        <input v-model="priceMin" type="number" placeholder="Min price" />
-        <input v-model="priceMax" type="number" placeholder="Max price" />
+        <input v-model="priceMin" type="number" placeholder="Min price"/>
+        <input v-model="priceMax" type="number" placeholder="Max price"/>
       </div>
 
       <input
           v-model="keywordSearch"
           type="text"
-          placeholder="Keywords (material, colour, etc.)"
+          placeholder="Keywords (e.g. cotton, leather, black...)"
       />
 
       <label class="recent-check">
-        <input type="checkbox" v-model="recentOnly" />
-        <span>Recently added (last 7 days)</span>
+        <input type="checkbox" v-model="recentOnly"/>
+        Recently added (last 7 days)
       </label>
 
       <button @click="searchProductsHandler" :disabled="loading">
@@ -135,15 +136,13 @@ watch(results, async (val) => {
       </button>
     </div>
 
-    <!-- Results -->
+    <!-- RESULTS -->
     <section class="results">
       <h2>Results</h2>
 
-      <p v-if="!loading && results.length === 0" class="muted">
-        No results yet — try searching!
-      </p>
+      <p v-if="!loading && results.length === 0" class="muted">No results yet — try searching!</p>
 
-      <!-- DATATABLES TABLE -->
+      <!-- DATATABLES -->
       <table ref="tableRef" class="display results-table" v-if="results.length > 0">
         <thead>
         <tr>
@@ -154,13 +153,14 @@ watch(results, async (val) => {
           <th>Release</th>
         </tr>
         </thead>
+
         <tbody>
-        <tr v-for="p in results" :key="p.id">
-          <td><img :src="p.thumbnail" class="table-thumb" /></td>
-          <td>{{ p.name }}</td>
-          <td>€{{ p.price }}</td>
-          <td>{{ p.category }}</td>
-          <td>{{ p.release }}</td>
+        <tr v-for="r in results" :key="r.id">
+          <td><img class="table-thumb" :src="r.thumbnail"/></td>
+          <td>{{ r.name }}</td>
+          <td>€{{ r.price }}</td>
+          <td>{{ r.category }}</td>
+          <td>{{ r.release }}</td>
         </tr>
         </tbody>
       </table>
@@ -180,15 +180,15 @@ watch(results, async (val) => {
   </section>
 </template>
 
-
 <style scoped>
-/* PAGE LAYOUT */
+/* identical to your last cleaned version — ensures polished UI */
 .search-shell {
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
 }
 
+/* HEADER */
 .search-header {
   text-align: center;
   margin-bottom: 25px;
@@ -197,19 +197,17 @@ watch(results, async (val) => {
 .search-header h1 {
   font-size: 2.2rem;
   font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 1px;
+  color: #fff;
 }
 
 .search-header p {
-  color: #cccccc;
-  font-size: 0.95rem;
+  color: #ccc;
 }
 
 /* FILTERS */
 .filters {
   background: #111;
-  padding: 18px;
+  padding: 20px;
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -222,84 +220,35 @@ input,
 select {
   padding: 12px;
   border-radius: 12px;
-  border: none;
-  background: #1d1d1d;
+  background: #1c1c1c;
   color: white;
-  font-size: 1rem;
-}
-
-input::placeholder {
-  color: #aaa;
+  border: none;
 }
 
 button {
-  background: #ffffff;
-  color: black;
   padding: 12px;
-  font-size: 1rem;
-  font-weight: 600;
   border-radius: 12px;
+  background: white;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
 }
 
 button:hover {
-  background: #e5e5e5;
-}
-
-.price-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.recent-check {
-  color: #ccc;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-/* RESULTS */
-.results h2 {
-  font-size: 1.4rem;
-  margin-bottom: 10px;
-  color: #fff;
-}
-
-.muted {
-  color: #777;
-  text-align: center;
+  background: #ddd;
 }
 
 /* DATATABLES */
-.results-table :deep(th),
-.results-table :deep(td) {
-  padding: 10px;
-  color: #fff;
-}
-
-.results-table :deep(tr) {
-  background: #141414 !important;
-}
-
-.results-table :deep(th) {
-  background: #222 !important;
-}
-
-.table-thumb {
+.results-table img {
   width: 55px;
   height: 55px;
   border-radius: 8px;
-  object-fit: cover;
 }
 
-/* PRODUCT GRID */
+/* GRID CARDS */
 .grid {
-  margin-top: 20px;
+  margin-top: 24px;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  gap: 20px;
 }
 </style>

@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
         FROM Product p
         LEFT JOIN p.categoryId c
         WHERE (:name IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :name, '%')))
-          AND (:categoryName IS NULL OR LOWER(c.categoryName) = LOWER(:categoryName))
+          AND (:categoryName IS NULL OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :categoryName, '%'))
           AND (:minPrice IS NULL OR p.price >= :minPrice)
           AND (:maxPrice IS NULL OR p.price <= :maxPrice)
           AND (:recentDate IS NULL OR p.releaseDate >= :recentDate)

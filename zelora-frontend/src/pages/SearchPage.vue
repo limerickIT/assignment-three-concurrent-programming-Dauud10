@@ -1,11 +1,11 @@
 <script setup>
-import {ref, onMounted, watch, nextTick} from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import axios from "axios";
 import ProductCard from "../components/ProductCard.vue";
 
 import $ from "jquery";
 import "datatables.net-dt";
-import "datatables.net-dt/css/dataTables.dataTables.css"; // ✅ correct path
+import "datatables.net-dt/css/dataTables.dataTables.css";
 
 // filters
 const nameSearch = ref("");
@@ -28,6 +28,7 @@ onMounted(async () => {
   try {
     const res = await axios.get("http://localhost:8080/api/categories");
     categories.value = res.data;
+    console.log("Categories loaded:", res.data);
   } catch (e) {
     console.error("Failed to load categories", e);
   }
@@ -38,10 +39,10 @@ async function searchProductsHandler() {
 
   const params = {
     name: nameSearch.value || null,
-    category: categorySearch.value || null,
+    categoryName: categorySearch.value || null,
     minPrice: priceMin.value || null,
     maxPrice: priceMax.value || null,
-    keywords: keywordSearch.value || null,
+    keyword: keywordSearch.value || null,
     recentOnly: recentOnly.value,
   };
 
@@ -118,8 +119,10 @@ watch(results, async (val) => {
           placeholder="Search by product name..."
       />
 
+      <!-- FIXED DROPDOWN (camelCase fields) -->
       <select v-model="categorySearch">
         <option value="">All categories</option>
+
         <option
             v-for="c in categories"
             :key="c.categoryId"
@@ -174,7 +177,9 @@ watch(results, async (val) => {
         </thead>
         <tbody>
         <tr v-for="p in results" :key="p.id">
-          <td><img :src="p.thumbnail" class="table-thumb"/></td>
+          <td>
+            <img :src="p.thumbnail" class="table-thumb"/>
+          </td>
           <td>{{ p.name }}</td>
           <td>€{{ p.price.toFixed(2) }}</td>
           <td>{{ p.category }}</td>

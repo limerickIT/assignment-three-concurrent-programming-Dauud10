@@ -1,10 +1,11 @@
 package com.example.assignment_three_zelora.model.entitys;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.List;
-
 
 @Entity
 @Table(name = "categories")
@@ -12,15 +13,20 @@ public class Category implements Serializable {
 
     @Id
     @Basic(optional = false)
-    @Column(name = "category_id")
+    @JsonProperty("categoryId") // JSON key
+    @Column(name = "category_id") // DB column
     private Integer categoryId;
-    
+
+    @JsonProperty("categoryName")
     @Column(name = "category_name")
     private String categoryName;
-   
+
+    @JsonProperty("categoryImage")
     @Column(name = "category_image")
     private String categoryImage;
-    
+
+    // Prevents infinite recursion + huge payloads
+    @JsonIgnore
     @OneToMany(mappedBy = "categoryId")
     private List<Product> productList;
 
@@ -31,23 +37,22 @@ public class Category implements Serializable {
         this.productList = productList;
     }
 
-    public Category() {
-    }
+    public Category() {}
 
     public Integer getCategoryId() {
-        return this.categoryId;
+        return categoryId;
     }
 
     public String getCategoryName() {
-        return this.categoryName;
+        return categoryName;
     }
 
     public String getCategoryImage() {
-        return this.categoryImage;
+        return categoryImage;
     }
 
     public List<Product> getProductList() {
-        return this.productList;
+        return productList;
     }
 
     public void setCategoryId(Integer categoryId) {
@@ -66,7 +71,10 @@ public class Category implements Serializable {
         this.productList = productList;
     }
 
+    @Override
     public String toString() {
-        return "Category(categoryId=" + this.getCategoryId() + ", categoryName=" + this.getCategoryName() + ", categoryImage=" + this.getCategoryImage() + ")";
+        return "Category(categoryId=" + categoryId +
+                ", categoryName=" + categoryName +
+                ", categoryImage=" + categoryImage + ")";
     }
 }

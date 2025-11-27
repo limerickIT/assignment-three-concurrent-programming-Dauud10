@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import ProductCard from "../components/ProductCard.vue";
 
@@ -11,6 +11,12 @@ const keywordSearch = ref("");
 const recentOnly = ref(false);
 const results = ref([]);
 const loading = ref(false);
+const categories = ref([]);
+
+onMounted(async () => {
+  const res = await axios.get("http://localhost:8080/api/categories");
+  categories.value = res.data;
+});
 
 async function searchProductsHandler() {
   loading.value = true;
@@ -59,11 +65,16 @@ async function searchProductsHandler() {
           type="text"
           placeholder="Search by product name..."
       />
-      <input
-          v-model="categorySearch"
-          type="text"
-          placeholder="Category name..."
-      />
+      <select v-model="categorySearch">
+        <option value="">All Categories</option>
+        <option
+            v-for="c in categories"
+            :key="c.categoryId"
+            :value="c.categoryName">
+          {{ c.categoryName }}
+        </option>
+      </select>
+
 
       <div class="price-row">
         <input v-model="priceMin" type="number" placeholder="Min price" />
@@ -127,6 +138,16 @@ async function searchProductsHandler() {
   color: #555;
   font-size: 0.95rem;
 }
+
+select {
+  padding: 12px;
+  border-radius: 16px;
+  border: none;
+  background: black;
+  color: white;
+  font-size: 1rem;
+}
+
 
 .filters {
   display: flex;

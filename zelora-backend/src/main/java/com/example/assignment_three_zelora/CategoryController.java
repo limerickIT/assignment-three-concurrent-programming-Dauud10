@@ -2,7 +2,9 @@ package com.example.assignment_three_zelora;
 
 import com.example.assignment_three_zelora.model.entitys.Category;
 import com.example.assignment_three_zelora.model.repos.CategoryRepository;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -10,14 +12,14 @@ import java.util.List;
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    private final CategoryRepository categoryRepo;
+    private final CategoryRepository repo;
 
-    public CategoryController(CategoryRepository categoryRepo) {
-        this.categoryRepo = categoryRepo;
+    public CategoryController(CategoryRepository repo) {
+        this.repo = repo;
     }
 
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryRepo.findAll();
+    public List<Category> getAll() {
+        return repo.findAll();
     }
 }

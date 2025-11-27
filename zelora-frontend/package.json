@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rollup/plugin-inject": "^5.0.5",
     "axios": "^1.13.2",
     "datatables.net": "^2.3.5",
     "datatables.net-dt": "^2.3.5",

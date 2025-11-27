@@ -6,7 +6,8 @@ import ProductCard from "../components/ProductCard.vue";
 // datatables
 import $ from "jquery";
 import "datatables.net-dt";
-import "datatables.net-dt/css/jquery.dataTables.css";
+import "datatables.net-dt/css/dataTables.dataTables.css";
+
 
 const nameSearch = ref("");
 const categorySearch = ref("");

@@ -1,51 +1,82 @@
 <script setup>
-import { defineProps } from "vue"
-
 const props = defineProps({
   id: Number,
   name: String,
   price: Number,
-  thumbnail: String
-})
+  thumbnail: String,
+});
 </script>
 
 <template>
-  <div class="card">
-    <img :src="thumbnail" class="thumb" alt="product image"/>
+  <article class="card">
+    <div class="thumb-wrap">
+      <img :src="thumbnail" class="thumb" alt="product image" />
+    </div>
 
-    <h3>{{ name }}</h3>
-    <p>€{{ price }}</p>
+    <h3 class="name">{{ name }}</h3>
+    <p class="price">€{{ price.toFixed(2) }}</p>
 
     <router-link :to="`/product/${id}`" class="btn">
       View Details
     </router-link>
-  </div>
+  </article>
 </template>
 
 <style scoped>
 .card {
-  border: 1px solid #444;
-  padding: 14px;
-  border-radius: 8px;
-  background: #222;
-  color: #fff;
-  text-align: center;
+  background: #111;
+  color: #f5f5f5;
+  border-radius: 14px;
+  padding: 12px 12px 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.thumb-wrap {
+  border-radius: 10px;
+  overflow: hidden;
+  background: radial-gradient(circle at top, #ffffff, #999999);
+  margin-bottom: 4px;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .thumb {
   width: 100%;
-  max-height: 150px;
+  height: 100%;
   object-fit: cover;
-  border-radius: 8px;
+}
+
+.name {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.price {
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
 }
 
 .btn {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 8px 12px;
-  background: #4e89ff;
-  color: white;
-  text-decoration: none;
-  border-radius: 6px;
+  margin-top: 4px;
+  text-align: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #111;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.btn:hover {
+  background: #e3e3e3;
 }
 </style>

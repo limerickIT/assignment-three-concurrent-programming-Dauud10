@@ -9,15 +9,12 @@ import java.util.List;
 @Repository
 public interface WishlistRepository extends JpaRepository<Wishlist, Integer> {
 
-    // All wishlist rows for a customer
-    List<Wishlist> findByCustomerId_CustomerId(Integer customerId);
+    // We treat wishlist as “global” (dummy customer) for now
+    boolean existsByProductId_ProductId(Integer productId);
 
-    // Check if specific product is in wishlist
-    boolean existsByCustomerId_CustomerIdAndProductId_ProductId(Integer customerId, Integer productId);
+    void deleteByProductId_ProductId(Integer productId);
 
-    // Remove specific product from wishlist
-    void deleteByCustomerId_CustomerIdAndProductId_ProductId(Integer customerId, Integer productId);
+    List<Wishlist> findAll();
 
-    // For generating the next wishlist_id (since there is no AUTO_INCREMENT)
     Wishlist findTopByOrderByWishlistIdDesc();
 }

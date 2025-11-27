@@ -1,334 +1,247 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
-import ProductCard from "../components/ProductCard.vue";
-import { getRecentlyViewed } from "../services/recentlyViewed.js";
-
-const router = useRouter();
-
-const featured = ref([]);
-const recent = ref([]);
-
-function imgUrl(featureImage) {
-  if (!featureImage) {
-    return new URL(`/src/assets/no-image.png`, import.meta.url).href;
-  }
-  return new URL(`/src/assets/products/${featureImage}`, import.meta.url).href;
-}
-
-onMounted(async () => {
-  // Recently viewed from localStorage
-  recent.value = getRecentlyViewed();
-
-  // Featured = recently added products
-  try {
-    const res = await axios.get("http://localhost:8080/api/products/search", {
-      params: { recentOnly: true },
-    });
-
-    featured.value = res.data.slice(0, 8).map((p) => ({
-      id: p.id,
-      name: p.name,
-      price: p.displayPrice ?? p.price,
-      thumbnail: imgUrl(p.featureImage),
-    }));
-  } catch (err) {
-    console.error("Failed to load featured products", err);
-  }
-});
-
-function goSearch() {
-  router.push({ name: "search" });
-}
-
-function goRecent() {
-  router.push({ path: "/recent" });
-}
+import { RouterLink } from "vue-router";
 </script>
 
 <template>
-  <section class="page-shell home-shell">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-text">
-        <p class="eyebrow">SUSTAINABLE STREETWEAR</p>
-        <h1>
+  <section class="home-shell">
+
+    <!-- ============================
+         HERO SECTION
+    ============================= -->
+    <div class="hero">
+      <div class="hero-left">
+
+        <p class="sub">Sustainable Streetwear</p>
+
+        <h1 class="title">
           Dress sharp.<br />
-          <span>Leave a lighter footprint.</span>
+          <span class="accent">Leave a lighter footprint.</span>
         </h1>
-        <p class="sub">
-          Explore eco-friendly fits from hoodies to footwear – all pulled live from the
-          Zelora database.
+
+        <p class="desc">
+          Explore eco-friendly fits from hoodies to footwear — all pulled live
+          from the Zelora database through your Spring Boot API.
         </p>
 
         <div class="hero-actions">
-          <button class="btn primary" @click="goSearch">Browse Products</button>
-          <button class="btn ghost" @click="goRecent">Recently Viewed</button>
+          <RouterLink to="/search" class="btn-primary">Browse Products</RouterLink>
+          <RouterLink to="/recent" class="btn-secondary">Recently Viewed</RouterLink>
         </div>
 
-        <p class="hero-meta">
-          Powered by Spring Boot + Vue · Live search · Drill-down product insights
+        <p class="powered">
+          Powered by Spring Boot · Vue · Live Search · Drill-down product insights
         </p>
       </div>
 
-      <div class="hero-card">
-        <div class="bubble main"></div>
-        <div class="bubble small"></div>
-        <div class="bubble tiny"></div>
-        <p class="hero-tag">Eco fabrics · Fair suppliers · Clean silhouettes</p>
-      </div>
-    </section>
+      <div class="hero-right">
+        <div class="art-box">
+          <div class="circle small"></div>
+          <div class="circle large"></div>
 
-    <!-- FEATURED / NEW -->
-    <section class="section" v-if="featured.length">
-      <div class="section-header">
-        <h2>New this week</h2>
-        <p>Fresh drops released in the last seven days.</p>
-      </div>
-
-      <div class="grid">
-        <ProductCard
-            v-for="p in featured"
-            :key="p.id"
-            :id="p.id"
-            :name="p.name"
-            :price="p.price"
-            :thumbnail="p.thumbnail"
-        />
-      </div>
-    </section>
-
-    <!-- RECENTLY VIEWED PREVIEW -->
-    <section class="section" v-if="recent.length">
-      <div class="section-header">
-        <h2>Pick up where you left off</h2>
-        <p>Quick links to items you recently checked out.</p>
-      </div>
-
-      <div class="recent-strip">
-        <div
-            class="recent-card"
-            v-for="item in recent.slice(0, 6)"
-            :key="item.id"
-        >
-          <img :src="item.image" alt="" />
-          <p class="name">{{ item.name }}</p>
-          <p class="price">€{{ item.price }}</p>
-          <router-link :to="`/product/${item.id}`" class="mini-link">
-            View
-          </router-link>
+          <div class="tags">
+            Eco fabrics · Fair suppliers · Clean silhouettes
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- ============================
+         BRAND SECTION (new)
+    ============================= -->
+    <section class="brand-section">
+      <img
+          src="/src/assets/ZeloraLogo.png"
+          alt="Zelora Brand"
+          class="brand-image"
+      />
+
+      <div class="brand-text">
+        <p>
+          Founded in 2025, Zelora is a sustainable online clothing company based in Ireland
+          and has quickly made a name for itself in the world of sustainable fashion.
+        </p>
+
+        <p>
+          Located amidst the picturesque surroundings of the TUS Moylish Campus,
+          Zelora’s founders aim to create a brand that celebrates Irish craftsmanship
+          while promoting a sustainable way of life.
+        </p>
+
+        <p>
+          Zelora’s target market is eco-conscious, style-driven consumers who value
+          sustainable materials, ethical production, and longer-lasting wardrobe pieces.
+        </p>
+      </div>
     </section>
+
   </section>
+
+  <footer class="footer">
+    Zelora · Sustainable Streetwear
+  </footer>
 </template>
 
 <style scoped>
+/* PAGE WRAPPER */
 .home-shell {
-  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 16px 70px;
+  color: #fff;
 }
 
-/* HERO */
+/* =========================
+   HERO SECTION
+=========================== */
 .hero {
+  background: linear-gradient(135deg, #e9e9e9, #d0d0d0);
+  border-radius: 24px;
+  padding: 40px 50px;
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2.4fr);
-  gap: 32px;
-  align-items: center;
-  margin-bottom: 36px;
+  grid-template-columns: 1.6fr 1.4fr;
+  gap: 40px;
+  box-shadow: 0 8px 40px rgba(255, 255, 255, 0.07);
 }
 
 @media (max-width: 900px) {
   .hero {
     grid-template-columns: 1fr;
+    text-align: center;
   }
 }
 
-.hero-text h1 {
-  font-size: 2.6rem;
-  line-height: 1.1;
-  margin-bottom: 10px;
-  color: #ffffff;
-}
-
-.hero-text h1 span {
-  color: #8ab4ff;
-}
-
-.eyebrow {
-  letter-spacing: 0.18em;
+.sub {
   text-transform: uppercase;
   font-size: 0.75rem;
-  color: #bbbbbb;
-  margin-bottom: 6px;
+  letter-spacing: 0.2em;
+  color: #666;
+  margin-bottom: 14px;
 }
 
-.sub {
-  color: #d0d0d0;
-  max-width: 480px;
-  margin-bottom: 16px;
-  font-size: 0.98rem;
+.title {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #111;
+}
+
+.accent {
+  color: #356bff;
+}
+
+.desc {
+  font-size: 1.05rem;
+  color: #444;
+  margin-bottom: 18px;
+  max-width: 500px;
 }
 
 .hero-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 15px;
+  margin-bottom: 16px;
 }
 
-.btn {
-  padding: 10px 18px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
+@media (max-width: 900px) {
+  .hero-actions {
+    justify-content: center;
+  }
+}
+
+.btn-primary {
+  background: #3273ff;
+  padding: 12px 22px;
+  border-radius: 30px;
+  color: white;
   font-weight: 600;
-  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(0, 80, 200, 0.3);
 }
 
-.btn.primary {
-  background: #3b82f6;
-  color: #fff;
-  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.35);
+.btn-secondary {
+  background: white;
+  padding: 12px 22px;
+  border-radius: 30px;
+  color: #111;
+  font-weight: 600;
 }
 
-.btn.primary:hover {
-  background: #2563eb;
-}
-
-.btn.ghost {
-  background: transparent;
-  color: #f5f5f5;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-}
-
-.btn.ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.hero-meta {
-  color: #888;
+.powered {
+  color: #555;
   font-size: 0.85rem;
 }
 
-/* Hero visual card */
-.hero-card {
+/* Right-hand hero artwork */
+.art-box {
+  background: linear-gradient(145deg, #dcdcdc, #bcbcbc);
+  border-radius: 18px;
+  height: 230px;
   position: relative;
-  background: radial-gradient(circle at 0 0, #ffffff, #888888);
-  border-radius: 24px;
-  padding: 24px;
-  min-height: 220px;
-  overflow: hidden;
   display: flex;
-  align-items: flex-end;
-  justify-content: flex-start;
+  justify-content: center;
+  align-items: center;
 }
 
-.hero-tag {
-  background: rgba(0, 0, 0, 0.72);
-  color: #f5f5f5;
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 0.8rem;
-}
-
-.bubble {
+.circle {
   position: absolute;
   border-radius: 50%;
-  filter: blur(0.5px);
 }
 
-.bubble.main {
-  width: 170px;
-  height: 170px;
-  background: #000000;
-  top: 18px;
-  right: 24px;
+.circle.small {
+  width: 60px;
+  height: 60px;
+  background: #222;
+  left: 40px;
 }
 
-.bubble.small {
-  width: 70px;
-  height: 70px;
-  background: #18181b;
-  top: 40px;
-  left: 20px;
-}
-
-.bubble.tiny {
-  width: 40px;
-  height: 40px;
-  background: #111827;
-  bottom: 30px;
+.circle.large {
+  width: 140px;
+  height: 140px;
+  background: #000;
   right: 40px;
 }
 
-/* GENERIC SECTION */
-.section {
-  margin-top: 26px;
+.tags {
+  position: absolute;
+  bottom: 20px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 20px;
+  font-size: 0.75rem;
 }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 12px;
-}
-
-.section-header h2 {
-  font-size: 1.4rem;
-  color: #ffffff;
-}
-
-.section-header p {
-  color: #a0a0a0;
-  font-size: 0.9rem;
-}
-
-/* GRID FOR FEATURED PRODUCTS */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 18px;
-}
-
-/* RECENT STRIP */
-.recent-strip {
-  display: flex;
-  gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-}
-
-.recent-card {
-  min-width: 160px;
-  background: #111;
-  border-radius: 14px;
-  padding: 10px;
-  color: #f5f5f5;
+/* =========================
+   BRAND SECTION
+=========================== */
+.brand-section {
+  margin-top: 60px;
+  background: linear-gradient(180deg, #ffffff, #e8e8e8);
+  color: #000;
+  border-radius: 24px;
+  padding: 40px;
   text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 40px rgba(255, 255, 255, 0.06);
 }
 
-.recent-card img {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 6px;
-  object-fit: cover;
+.brand-image {
+  max-width: 420px;
+  margin-bottom: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
 }
 
-.recent-card .name {
-  font-size: 0.88rem;
-  font-weight: 600;
+.brand-section p {
+  font-size: 1.05rem;
+  margin-bottom: 14px;
+  color: #333;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.recent-card .price {
+.footer {
+  margin-top: 60px;
+  text-align: center;
+  color: #ddd;
   font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.mini-link {
-  font-size: 0.78rem;
-  text-decoration: underline;
 }
 </style>

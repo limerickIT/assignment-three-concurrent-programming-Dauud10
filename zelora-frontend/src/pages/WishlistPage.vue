@@ -3,53 +3,69 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import ProductCard from "../components/ProductCard.vue";
 
-const CURRENT_CUSTOMER_ID = 1; // same dummy user
+const CURRENT_CUSTOMER_ID = 1;
+const items = ref([]);
+const loading = ref(false);
 
-const wishlist = ref([]);
-const loading = ref(true);
+onMounted(loadWishlist);
 
-onMounted(async () => {
+async function loadWishlist() {
+  loading.value = true;
   try {
     const res = await axios.get(
         `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}`
     );
 
-    wishlist.value = res.data.map((p) => ({
-      id: p.id,
-      name: p.name,
-      price: p.displayPrice ?? p.price,
-      thumbnail: p.featureImage
-          ? `/src/assets/products/${p.featureImage}`
-          : "/src/assets/ZeloraAwaitingProductImage.png",
-    }));
-  } catch (e) {
-    console.error("Wishlist fetch failed", e);
-  }
+    items.value = res.data.map((p) => {
+      const price =
+          p.discountedPrice && p.discountedPrice < p.price
+              ? p.discountedPrice
+              : p.price;
 
+      const thumb = p.featureImage
+          ? new URL(`../assets/products/${p.featureImage}`, import.meta.url).href
+          : new URL(
+              "../assets/products/ZeloraAwaitingProductImage.png",
+              import.meta.url
+          ).href;
+
+      return {
+        id: p.id,
+        name: p.name,
+        price,
+        thumbnail: thumb,
+      };
+    });
+  } catch (e) {
+    console.error("Failed to load wishlist", e);
+    items.value = [];
+  }
   loading.value = false;
-});
+}
 </script>
 
 <template>
-  <section class="wish-shell page-shell">
-    <h1 class="title">My Wishlist</h1>
+  <section class="page-shell wish-shell">
+    <div class="wish-card">
+      <header class="wish-header">
+        <h1>My wishlist</h1>
+        <p>Save products to come back later.</p>
+      </header>
 
-    <p v-if="loading" class="muted">Loading wishlist...</p>
+      <p v-if="!loading && items.length === 0" class="empty">
+        Your wishlist is empty.
+      </p>
 
-    <p v-if="!loading && wishlist.length === 0" class="muted">
-      Your wishlist is empty!
-    </p>
-
-    <div class="grid">
-      <ProductCard
-          v-for="item in wishlist"
-          :key="item.id"
-          :id="item.id"
-          :name="item.name"
-          :price="item.price"
-          :thumbnail="item.thumbnail"
-          show-heart="false"
-      />
+      <div class="grid" v-if="items.length > 0">
+        <ProductCard
+            v-for="p in items"
+            :key="p.id"
+            :id="p.id"
+            :name="p.name"
+            :price="p.price"
+            :thumbnail="p.thumbnail"
+        />
+      </div>
     </div>
   </section>
 </template>
@@ -58,24 +74,36 @@ onMounted(async () => {
 .wish-shell {
   max-width: 900px;
   margin: 0 auto;
+  padding: 20px;
 }
 
-.title {
-  font-size: 2rem;
-  margin-bottom: 20px;
-  color: #fff;
-  text-align: center;
+.wish-card {
+  background: #f8f8f8;
+  border-radius: 24px;
+  padding: 22px 24px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.7);
+  min-height: 380px;
 }
 
-.muted {
+.wish-header h1 {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.wish-header p {
+  color: #555;
+}
+
+.empty {
+  margin-top: 40px;
   text-align: center;
-  color: #bbb;
-  margin-bottom: 20px;
+  color: #777;
 }
 
 .grid {
+  margin-top: 18px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
 }
 </style>

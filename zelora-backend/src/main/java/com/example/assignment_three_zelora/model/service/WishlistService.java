@@ -1,7 +1,6 @@
 package com.example.assignment_three_zelora.model.service;
 
 import com.example.assignment_three_zelora.model.dtos.ProductSummaryDto;
-import com.example.assignment_three_zelora.model.entitys.Customer;
 import com.example.assignment_three_zelora.model.entitys.Product;
 import com.example.assignment_three_zelora.model.entitys.Wishlist;
 import com.example.assignment_three_zelora.model.repos.ProductRepository;
@@ -24,49 +23,44 @@ public class WishlistService {
         this.productRepository = productRepository;
     }
 
+    // customerId is ignored (dummy user 1 for this assignment)
     public boolean isInWishlist(Integer customerId, Integer productId) {
-        return wishlistRepository
-                .existsByCustomerId_CustomerIdAndProductId_ProductId(customerId, productId);
+        return wishlistRepository.existsByProductId_ProductId(productId);
     }
 
-    public void addToWishlist(Integer customerId, Integer productId, String wishlistName) {
+    public void addToWishlist(Integer customerId, Integer productId) {
 
-        // If already exists, skip
-        if (isInWishlist(customerId, productId)) return;
+        if (isInWishlist(customerId, productId)) {
+            return;
+        }
 
-        // Get product
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found: " + productId));
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Product not found: " + productId));
 
-        // Create dummy customer (no need for CustomerRepository)
-        Customer customer = new Customer();
-        customer.setCustomerId(customerId);
-
-        // Manual ID generation (your DB has no auto increment)
         Wishlist last = wishlistRepository.findTopByOrderByWishlistIdDesc();
         int nextId = (last != null ? last.getWishlistId() + 1 : 1);
 
         Wishlist wishlist = new Wishlist();
         wishlist.setWishlistId(nextId);
-        wishlist.setCustomerId(customer);
         wishlist.setProductId(product);
         wishlist.setAddedDate(new Date());
-        wishlist.setWishlistName(wishlistName != null ? wishlistName : "Default");
+        wishlist.setWishlistName("Default");
         wishlist.setNotes(null);
+        // leave customerId as null so we don't need Customer repo
 
         wishlistRepository.save(wishlist);
     }
 
     public void removeFromWishlist(Integer customerId, Integer productId) {
-        wishlistRepository
-                .deleteByCustomerId_CustomerIdAndProductId_ProductId(customerId, productId);
+        wishlistRepository.deleteByProductId_ProductId(productId);
     }
 
     public List<ProductSummaryDto> getWishlistForCustomer(Integer customerId) {
-        List<Wishlist> rows = wishlistRepository.findByCustomerId_CustomerId(customerId);
+        List<Wishlist> rows = wishlistRepository.findAll();
 
         return rows.stream()
-                .map(w -> w.getProductId())
+                .map(Wishlist::getProductId)
                 .map(p -> new ProductSummaryDto(
                         p.getProductId(),
                         p.getProductName(),

@@ -25,7 +25,7 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
            FROM Review r
            WHERE r.productId.productId = :productId
              AND r.rating >= 3
-             AND (r.flaggedAsSpam IS NULL OR r.flaggedAsSpam = 0)
+             AND (r.flaggedAsSpam IS NULL OR r.flaggedAsSpam = false)
            """)
     List<Review> findVisibleReviewsByProduct(@Param("productId") Integer productId);
 }

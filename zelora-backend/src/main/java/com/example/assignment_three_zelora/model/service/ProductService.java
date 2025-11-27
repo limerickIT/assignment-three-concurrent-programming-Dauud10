@@ -14,6 +14,9 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 
 @Service
 public class ProductService {
@@ -176,4 +179,60 @@ public class ProductService {
                 available
         );
     }
+    // ------------------------------
+    // RECOMMENDED PRODUCTS (unique feature)
+    // ------------------------------
+    public List<Product> getRecommendedProducts(Integer productId) {
+
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            return List.of();
+        }
+
+        Set<Product> recommended = new LinkedHashSet<>();
+
+        // 1) Same category
+        if (product.getCategoryId() != null) {
+            recommended.addAll(
+                    productRepository.findByCategoryForRecommendations(
+                            product.getCategoryId().getCategoryId(),
+                            productId
+                    )
+            );
+        }
+
+        // 2) Similar colour
+        if (product.getColour() != null && !product.getColour().isBlank()) {
+            recommended.addAll(
+                    productRepository.findByColourForRecommendations(
+                            product.getColour(),
+                            productId
+                    )
+            );
+        }
+
+        // 3) Similar material
+        if (product.getMaterial() != null && !product.getMaterial().isBlank()) {
+            recommended.addAll(
+                    productRepository.findByMaterialForRecommendations(
+                            product.getMaterial(),
+                            productId
+                    )
+            );
+        }
+
+        // 4) Similar sustainability rating
+        if (product.getSustainabilityRating() != null) {
+            recommended.addAll(
+                    productRepository.findBySustainabilityForRecommendations(
+                            product.getSustainabilityRating(),
+                            productId
+                    )
+            );
+        }
+
+        // Keep it small for UI (e.g. max 8)
+        return recommended.stream().limit(8).toList();
+    }
+
 }

@@ -1,45 +1,81 @@
 <script setup>
 import axios from "axios";
 import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { addRecentlyViewed, getRecentlyViewed } from "../services/recentlyViewed.js";
+import ProductCard from "../components/ProductCard.vue";
 
 const route = useRoute();
-const router = useRouter();
 const product = ref(null);
 const recently = ref([]);
+const recommended = ref([]);
+const isInWishlist = ref(false);
+
+const CURRENT_CUSTOMER_ID = 1; // dummy user for this assignment
 
 onMounted(async () => {
   const id = route.params.id;
 
-  try {
-    const res = await axios.get(
-        `http://localhost:8080/api/products/${id}/detail`
-    );
-    product.value = res.data;
+  // 1. Fetch product details
+  const res = await axios.get(`http://localhost:8080/api/products/${id}/detail`);
+  product.value = res.data;
 
-    // Build image path
-    if (product.value.featureImage) {
-      product.value.imagePath = `/src/assets/${product.value.featureImage}`;
-    } else {
-      product.value.imagePath = "/src/assets/no-image.png";
-    }
-
-    // Save to recently viewed
-    addRecentlyViewed({
-      id: product.value.id,
-      name: product.value.name,
-      image: product.value.imagePath,
-      price: product.value.displayPrice,
-    });
-
-    recently.value = getRecentlyViewed();
-  } catch (e) {
-    console.error("Failed to load product", e);
-    router.push("/search");
+  // Build image path
+  if (product.value.featureImage) {
+    product.value.imagePath = `/src/assets/products/${product.value.featureImage}`;
+  } else {
+    product.value.imagePath = "/src/assets/ZeloraAwaitingProductImage.png";
   }
+
+  // 2. Save to "recently viewed"
+  const currentId = product.value.id ?? product.value.productId;
+  const currentName = product.value.name ?? product.value.productName;
+
+  addRecentlyViewed({
+    id: currentId,
+    name: currentName,
+    image: product.value.imagePath,
+    price: product.value.displayPrice ?? product.value.price,
+  });
+
+  recently.value = getRecentlyViewed();
+
+  // 3. Recommended products
+  const recRes = await axios.get(
+      `http://localhost:8080/api/products/${id}/recommendations`
+  );
+  recommended.value = recRes.data.map(p => ({
+    id: p.id,
+    name: p.name,
+    price: p.discountedPrice && p.discountedPrice < p.price ? p.discountedPrice : p.price,
+    thumbnail: p.featureImage
+        ? `/src/assets/products/${p.featureImage}`
+        : "/src/assets/ZeloraAwaitingProductImage.png",
+  }));
+
+  // 4. Wishlist status
+  const wishRes = await axios.get(
+      `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}/contains/${id}`
+  );
+  isInWishlist.value = wishRes.data === true;
 });
+
+// Toggle wishlist
+async function toggleWishlist() {
+  if (!product.value) return;
+  const id = route.params.id;
+  const base = `http://localhost:8080/api/wishlist/customer/${CURRENT_CUSTOMER_ID}`;
+
+  if (isInWishlist.value) {
+    await axios.delete(`${base}/remove/${id}`);
+    isInWishlist.value = false;
+  } else {
+    await axios.post(`${base}/add/${id}`);
+    isInWishlist.value = true;
+  }
+}
 </script>
+
 
 <template>
   <section v-if="product" class="page-shell detail-shell">
@@ -268,4 +304,36 @@ onMounted(async () => {
   margin: 40px auto;
   text-align: center;
 }
+.wishlist-btn {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid #444;
+  background: #111;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.wishlist-btn:hover {
+  background: #222;
+  transform: translateY(-1px);
+}
+
+/* Recommended row */
+.recommended {
+  margin-top: 40px;
+}
+
+.recommended h2 {
+  margin-bottom: 12px;
+}
+
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
 </style>

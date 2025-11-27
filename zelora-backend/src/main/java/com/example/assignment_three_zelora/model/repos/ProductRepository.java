@@ -14,16 +14,16 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     @Query("""
-        SELECT p
-        FROM Product p
-        LEFT JOIN p.categoryId c
-        WHERE (:name IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :name, '%')))
-          AND (:categoryName IS NULL OR LOWER(c.categoryName) LIKE LOWER(CONCAT('%', :categoryName, '%'))
-          AND (:minPrice IS NULL OR p.price >= :minPrice)
-          AND (:maxPrice IS NULL OR p.price <= :maxPrice)
-          AND (:recentDate IS NULL OR p.releaseDate >= :recentDate)
-          AND (:keyword IS NULL OR p.description LIKE CONCAT('%', :keyword, '%'))
-        """)
+    SELECT p
+    FROM Product p
+    LEFT JOIN p.categoryId c
+    WHERE (:name IS NULL OR LOWER(p.productName) LIKE LOWER(CONCAT('%', :name, '%')))
+      AND (:categoryName IS NULL OR LOWER(c.categoryName) = LOWER(:categoryName))
+      AND (:minPrice IS NULL OR p.price >= :minPrice)
+      AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+      AND (:recentDate IS NULL OR p.releaseDate >= :recentDate)
+      AND (:keyword IS NULL OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')))
+    """)
     List<Product> searchProducts(
             @Param("name") String name,
             @Param("categoryName") String categoryName,
@@ -32,4 +32,44 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
             @Param("recentDate") Date recentDate,
             @Param("keyword") String keyword
     );
+    @Query("""
+        SELECT p FROM Product p
+        WHERE p.categoryId.categoryId = :categoryId
+          AND p.productId <> :productId
+    """)
+    List<Product> findByCategoryForRecommendations(
+            @Param("categoryId") Integer categoryId,
+            @Param("productId") Integer productId
+    );
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE LOWER(p.colour) LIKE LOWER(CONCAT('%', :colour, '%'))
+          AND p.productId <> :productId
+    """)
+    List<Product> findByColourForRecommendations(
+            @Param("colour") String colour,
+            @Param("productId") Integer productId
+    );
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE LOWER(p.material) LIKE LOWER(CONCAT('%', :material, '%'))
+          AND p.productId <> :productId
+    """)
+    List<Product> findByMaterialForRecommendations(
+            @Param("material") String material,
+            @Param("productId") Integer productId
+    );
+
+    @Query("""
+        SELECT p FROM Product p
+        WHERE p.sustainabilityRating = :rating
+          AND p.productId <> :productId
+    """)
+    List<Product> findBySustainabilityForRecommendations(
+            @Param("rating") Integer rating,
+            @Param("productId") Integer productId
+    );
+
 }

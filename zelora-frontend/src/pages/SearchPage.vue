@@ -1,23 +1,40 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch, nextTick } from "vue";
 import axios from "axios";
 import ProductCard from "../components/ProductCard.vue";
 
+import $ from "jquery";
+import "datatables.net-dt";
+import "datatables.net-dt/css/jquery.dataTables.css";
+
+// Search fields
 const nameSearch = ref("");
 const categorySearch = ref("");
 const priceMin = ref("");
 const priceMax = ref("");
 const keywordSearch = ref("");
 const recentOnly = ref(false);
+
+// Data
 const results = ref([]);
 const loading = ref(false);
 const categories = ref([]);
 
+// DataTables
+const tableRef = ref(null);
+let dataTable = null;
+
+// Load categories on mount
 onMounted(async () => {
-  const res = await axios.get("http://localhost:8080/api/categories");
-  categories.value = res.data;
+  try {
+    const res = await axios.get("http://localhost:8080/api/categories");
+    categories.value = res.data;
+  } catch (err) {
+    console.error("Failed to load categories", err);
+  }
 });
 
+// Search handler
 async function searchProductsHandler() {
   loading.value = true;
 
@@ -31,9 +48,7 @@ async function searchProductsHandler() {
   };
 
   try {
-    const res = await axios.get("http://localhost:8080/api/products/search", {
-      params,
-    });
+    const res = await axios.get("http://localhost:8080/api/products/search", { params });
 
     results.value = res.data.map((p) => ({
       id: p.id,
@@ -42,6 +57,8 @@ async function searchProductsHandler() {
       thumbnail: p.featureImage
           ? `/src/assets/${p.featureImage}`
           : "/src/assets/no-image.png",
+      category: p.categoryName,
+      release: p.releaseDate,
     }));
   } catch (err) {
     console.error("Search failed:", err);
@@ -50,31 +67,52 @@ async function searchProductsHandler() {
 
   loading.value = false;
 }
+
+// Watch results → rebuild DataTables
+watch(results, async (val) => {
+  await nextTick();
+
+  if (!tableRef.value) return;
+
+  // Destroy old instance
+  if (dataTable) {
+    dataTable.destroy();
+    dataTable = null;
+  }
+
+  // Rebuild new table
+  if (val.length > 0) {
+    dataTable = $(tableRef.value).DataTable({
+      paging: true,
+      searching: true,
+      ordering: true,
+      lengthChange: false,
+      info: false,
+      pageLength: 5,
+    });
+  }
+});
 </script>
 
+
 <template>
-  <section class="page-shell search-shell">
+  <section class="search-shell">
+    <!-- Header -->
     <header class="search-header">
-      <h1>Search Products</h1>
-      <p>Filter by name, category, price, sustainability keywords and recency.</p>
+      <h1>Zelora Product Search</h1>
+      <p>Find products using detailed filters powered by our database.</p>
     </header>
 
+    <!-- Filters -->
     <div class="filters">
-      <input
-          v-model="nameSearch"
-          type="text"
-          placeholder="Search by product name..."
-      />
+      <input v-model="nameSearch" type="text" placeholder="Search by product name..." />
+
       <select v-model="categorySearch">
         <option value="">All Categories</option>
-        <option
-            v-for="c in categories"
-            :key="c.categoryId"
-            :value="c.categoryName">
+        <option v-for="c in categories" :key="c.categoryId" :value="c.categoryName">
           {{ c.categoryName }}
         </option>
       </select>
-
 
       <div class="price-row">
         <input v-model="priceMin" type="number" placeholder="Min price" />
@@ -84,7 +122,7 @@ async function searchProductsHandler() {
       <input
           v-model="keywordSearch"
           type="text"
-          placeholder="Keywords (material, colour, eco...)"
+          placeholder="Keywords (material, colour, etc.)"
       />
 
       <label class="recent-check">
@@ -97,13 +135,37 @@ async function searchProductsHandler() {
       </button>
     </div>
 
+    <!-- Results -->
     <section class="results">
       <h2>Results</h2>
 
       <p v-if="!loading && results.length === 0" class="muted">
-        No results yet. Try searching!
+        No results yet — try searching!
       </p>
 
+      <!-- DATATABLES TABLE -->
+      <table ref="tableRef" class="display results-table" v-if="results.length > 0">
+        <thead>
+        <tr>
+          <th>Preview</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Category</th>
+          <th>Release</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="p in results" :key="p.id">
+          <td><img :src="p.thumbnail" class="table-thumb" /></td>
+          <td>{{ p.name }}</td>
+          <td>€{{ p.price }}</td>
+          <td>{{ p.category }}</td>
+          <td>{{ p.release }}</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- PRODUCT CARDS -->
       <div class="grid">
         <ProductCard
             v-for="p in results"
@@ -118,80 +180,126 @@ async function searchProductsHandler() {
   </section>
 </template>
 
+
 <style scoped>
+/* PAGE LAYOUT */
 .search-shell {
-  max-width: 760px;
+  max-width: 900px;
   margin: 0 auto;
+  padding: 20px;
 }
 
 .search-header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .search-header h1 {
-  font-size: 2rem;
-  margin-bottom: 6px;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
 }
 
 .search-header p {
-  color: #555;
+  color: #cccccc;
   font-size: 0.95rem;
 }
 
+/* FILTERS */
+.filters {
+  background: #111;
+  padding: 18px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+}
+
+input,
 select {
   padding: 12px;
-  border-radius: 16px;
+  border-radius: 12px;
   border: none;
-  background: black;
+  background: #1d1d1d;
   color: white;
   font-size: 1rem;
 }
 
+input::placeholder {
+  color: #aaa;
+}
 
-.filters {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 24px;
+button {
+  background: #ffffff;
+  color: black;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+button:hover {
+  background: #e5e5e5;
 }
 
 .price-row {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
 .recent-check {
-  display: inline-flex;
+  color: #ccc;
+  font-size: 0.9rem;
+  display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.9rem;
-  color: #555;
 }
 
-.recent-check input {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-/* Results */
-
+/* RESULTS */
 .results h2 {
-  font-size: 1.3rem;
-  margin-bottom: 8px;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  color: #fff;
 }
 
 .muted {
   color: #777;
-  font-size: 0.9rem;
+  text-align: center;
 }
 
+/* DATATABLES */
+.results-table :deep(th),
+.results-table :deep(td) {
+  padding: 10px;
+  color: #fff;
+}
+
+.results-table :deep(tr) {
+  background: #141414 !important;
+}
+
+.results-table :deep(th) {
+  background: #222 !important;
+}
+
+.table-thumb {
+  width: 55px;
+  height: 55px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* PRODUCT GRID */
 .grid {
-  margin-top: 14px;
+  margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
 }
 </style>

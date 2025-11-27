@@ -1,59 +1,133 @@
 <script setup>
-/* Homepage */
+/* Homepage hero */
 </script>
 
 <template>
-  <div class="home-container">
-    <h1>Zelora — Sustainable Fashion</h1>
-    <p class="subtitle">Eco-friendly fashion built with style.</p>
+  <section class="page-shell home-shell">
+    <div class="home-left">
+      <h1>Zelora — Sustainable Fashion</h1>
+      <p class="tagline">Eco-friendly streetwear with performance styling.</p>
 
-    <router-link to="/search" class="home-btn">
-      Browse Products
-    </router-link>
-  </div>
+      <p class="sub">
+        Search for products by name, category, price range, and material
+        filters. View detailed sustainability status, customer reviews, and
+        availability across stock.
+      </p>
+
+      <router-link to="/search" class="cta">
+        Browse Products
+      </router-link>
+    </div>
+
+    <div class="home-right">
+      <div class="badge-row">
+        <span class="badge">Recycled fabrics</span>
+        <span class="badge">Low-impact dyes</span>
+      </div>
+      <div class="card-visual">
+        <p class="cv-title">Next-Gen Essentials</p>
+        <p class="cv-sub">Built for everyday, designed for the planet.</p>
+      </div>
+    </div>
+  </section>
 </template>
 
 <style scoped>
-.home-container {
-  text-align: center;
-  margin-top: 120px;
-
-
-  background: linear-gradient(to bottom, #f2f2f2, #d9d9d9);
-  padding: 80px 20px;
-  border-radius: 14px;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  box-shadow: 0 0 25px rgba(0,0,0,0.15);
+.home-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2.3fr);
+  gap: 32px;
+  align-items: center;
 }
 
-h1 {
-  color: #111;
+@media (max-width: 860px) {
+  .home-shell {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .home-right {
+    order: -1;
+  }
+}
+
+.home-left h1 {
   font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.subtitle {
+.tagline {
   font-size: 1.1rem;
-  color: #444;
-  margin-bottom: 30px;
+  color: #333;
+  margin-bottom: 18px;
 }
 
+.sub {
+  color: #555;
+  max-width: 460px;
+  margin-bottom: 26px;
+}
 
-.home-btn {
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  border-radius: 999px;
   background: #111;
-  color: white;
-  padding: 12px 25px;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.1rem;
+  color: #f5f5f5;
   font-weight: 600;
-  transition: 0.2s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
-.home-btn:hover {
+.cta:hover {
   background: #333;
+}
+
+/* Right visual */
+
+.home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid #b5b5b5;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #444;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.card-visual {
+  background: radial-gradient(circle at top left, #ffffff, #c7c7c7);
+  border-radius: 20px;
+  padding: 40px 24px;
+  text-align: right;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+}
+
+.cv-title {
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 4px;
+}
+
+.cv-sub {
+  color: #555;
+  font-size: 0.95rem;
 }
 </style>

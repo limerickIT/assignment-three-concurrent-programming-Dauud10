@@ -4,12 +4,12 @@ import { RouterView, RouterLink } from "vue-router";
 
 <template>
   <div>
-    <!-- 🌿 Navbar -->
     <nav class="navbar">
-      <RouterLink to="/" class="nav-item">Home</RouterLink>
-      <RouterLink to="/search" class="nav-item">Products</RouterLink>
-      <RouterLink to="/recent" class="nav-item">Recently Viewed</RouterLink>
+      <router-link to="/">Home</router-link>
+      <router-link to="/search">Search</router-link>
+      <router-link to="/recent">Recently Viewed</router-link>
     </nav>
+
 
     <!-- Page content -->
     <main>
@@ -20,21 +20,20 @@ import { RouterView, RouterLink } from "vue-router";
 
 <style>
 .navbar {
+  background: black;
+  padding: 15px 25px;
   display: flex;
   gap: 20px;
-  padding: 15px;
-  background: #111;
 }
-
-.nav-item {
-  color: #ddd;
-  text-decoration: none;
-  font-size: 1.1rem;
-}
-
-.nav-item:hover {
+.navbar a {
   color: white;
+  font-weight: 600;
+  text-decoration: none;
 }
+.navbar a:hover {
+  color: #4ea1ff;
+}
+
 
 main {
   padding: 20px;

@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="6c451138-1878-4839-a079-582c83cee1b9" name="Changes" comment="ProductCard component updated">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zelora-frontend/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/zelora-frontend/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/zelora-frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/zelora-frontend/src/router/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +39,10 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "Spring Boot.AssignmentThreeZeloraApplication.executor": "Run",
     "git-widget-placeholder": "main",
@@ -84,7 +90,7 @@
       <workItem from="1763436722431" duration="8000" />
       <workItem from="1763860294504" duration="8416000" />
       <workItem from="1763880113266" duration="57000" />
-      <workItem from="1764195918791" duration="1505000" />
+      <workItem from="1764195918791" duration="2410000" />
     </task>
     <task id="LOCAL-00001" summary="Setting up and installing vue, npm">
       <option name="closed" value="true" />

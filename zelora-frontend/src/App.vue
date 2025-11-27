@@ -37,7 +37,7 @@ const route = useRoute();
     <footer class="footer">
       <p class="footer-title">Zelora · Sustainable Streetwear</p>
       <p class="footer-sub">
-        Built with Spring Boot &amp; Vue · Demo assignment project
+        Built with Spring Boot &amp; Vue
       </p>
     </footer>
   </div>
